@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun 27 10:45:03 2022
+# Make data base, printed on Mon Jul  4 08:59:36 2022
 
 # Variables
 
@@ -25,7 +25,7 @@ SNAP_INSTANCE_KEY =
 # environment
 GJS_DEBUG_OUTPUT = stderr
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-b20ea651-7272-4a36-843a-048a7e2cc0c6.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-f3937748-77c5-4785-9495-0e9ae80dd8f3.sock
 # environment
 LC_NAME = pt_BR.UTF-8
 # environment
@@ -79,7 +79,7 @@ CURDIR := /home/lucas/Documents/TCC
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -107,7 +107,7 @@ SNAP_REEXEC =
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 11776
+VSCODE_PID = 8672
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -115,7 +115,7 @@ XDG_SESSION_TYPE = x11
 # environment
 BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
 # environment
-SESSION_MANAGER = local/lucas-C62-LIV:@/tmp/.ICE-unix/2411,unix/lucas-C62-LIV:/tmp/.ICE-unix/2411
+SESSION_MANAGER = local/lucas-C62-LIV:@/tmp/.ICE-unix/2213,unix/lucas-C62-LIV:/tmp/.ICE-unix/2213
 # automatic
 *F = $(notdir $*)
 # environment
@@ -149,7 +149,7 @@ MAKE = $(MAKE_COMMAND)
 # environment
 SNAP_COOKIE = 7rGYQs5xGx5bPEU2wlsSzJnSRAxoep-axT1IaklWJCV2W_xVvBVj
 # environment
-PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/lucas/linux64/bin
+PATH = /home/lucas/.local/bin:/home/lucas/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/lucas/linux64/bin
 # default
 MAKEFILES := 
 # environment
@@ -163,7 +163,7 @@ LC_TIME = pt_BR.UTF-8
 # environment
 SNAP = /snap/code/99
 # environment
-INVOCATION_ID = be2b7f1dda894919a77a06c55e8d6bc5
+INVOCATION_ID = 0e8d99bdb7f54355bdf16821820788ac
 # environment
 SNAP_REVISION = 99
 # environment
@@ -199,7 +199,7 @@ SNAP_ARCH = amd64
 # makefile
 .DEFAULT_GOAL := 
 # environment
-SYSTEMD_EXEC_PID = 2430
+SYSTEMD_EXEC_PID = 2240
 # environment
 DISPLAY = :0
 # environment
@@ -215,11 +215,11 @@ SNAP_DATA = /var/snap/code/99
 # environment
 SNAP_CONTEXT = 7rGYQs5xGx5bPEU2wlsSzJnSRAxoep-axT1IaklWJCV2W_xVvBVj
 # environment
-MANAGERPID = 1386
+MANAGERPID = 1286
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 11727
+GIO_LAUNCHED_DESKTOP_FILE_PID = 8588
 # environment
 _ = /snap/code/99/usr/share/code/code
 # environment
@@ -233,7 +233,7 @@ GDK_PIXBUF_MODULE_FILE = /home/lucas/snap/code/common/.cache/gdk-pixbuf-loaders.
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
-JOURNAL_STREAM = 8:31293
+JOURNAL_STREAM = 8:16184
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -280,15 +280,14 @@ SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd
 # Load=132/1024=13%, Rehash=0, Collisions=7/159=4%
 
 # Pattern-specific Variable Values
- 
 
 # No pattern-specific variable values.
 
 # Directories
 
-# . (device 2053, inode 4587584): 4 files, no impossibilities.
+# . (device 2053, inode 4587584): 5 files, no impossibilities.
 
-# 4 files, no impossibilities in 1 directories.
+# 5 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -331,6 +330,7 @@ GNUmakefile:
 #  Failed to be updated.
 
 # files hash-table stats:
+ 
 # Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
 # VPATH Search Paths
 
@@ -338,12 +338,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 12 / storage = 114 B / avg = 9 B
-# current buf: size = 8162 B / used = 114 B / count = 12 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 13 / storage = 119 B / avg = 9 B
+# current buf: size = 8162 B / used = 119 B / count = 13 / avg = 9 B
 
-# strcache performance: lookups = 15 / hit rate = 20%
+# strcache performance: lookups = 16 / hit rate = 18%
 # hash-table stats:
-# Load=12/8192=0%, Rehash=0, Collisions=0/15=0%
-# Finished Make data base on Mon Jun 27 10:45:03 2022
+# Load=13/8192=0%, Rehash=0, Collisions=0/16=0%
+# Finished Make data base on Mon Jul  4 08:59:36 2022
 
  
