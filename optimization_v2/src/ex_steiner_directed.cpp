@@ -56,7 +56,7 @@ int cutcount = 0;
 class Steiner_Instance {
 public:
   Steiner_Instance(Digraph &graph,
-		   DNodeStringMap &vvname,
+		   DNodeStringMap &vvname, 
 		   DNodePosMap &posx,
 		   DNodePosMap &posy,
 		   ArcValueMap &eweight,
