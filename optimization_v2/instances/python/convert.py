@@ -1,5 +1,12 @@
 import json
 import pandas as pd
+import math
+
+
+def makesin(x):
+    return math.sin(x)
+
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
@@ -26,9 +33,19 @@ nodes = nodes.merge(groups, on='group',how='left')
 #nodes.groupby(['group']).count()
 
 nodes['connect'] = nodes['out'] + nodes['in']
-position = nodes[['id','x','y','orbit','orbitIndex']]
+#nodes = nodes[~nodes['x'].isna()]
+position = nodes[['id','x','y','orbit','orbitIndex','connect']]
+position = position[~position['connect'].isna()]
+
 nodes = nodes.explode('connect')
+
+nodes = nodes[~nodes['connect'].isna()]
+
+position['x'] = position['x'] + position['orbit']+ position['orbitIndex']*2
+position['y'] = position['y'] + position['orbit'] + position['orbitIndex']*2
+position = position.drop(['orbit','orbitIndex','connect'],axis=1)
+position.to_excel('position.xlsx')
 #in é o que entra out é oq saí
 
 nodes = nodes.drop(['out','in'], axis=1)
-nodes = nodes[~nodes['connect'].isna()]
+
