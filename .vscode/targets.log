@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jul  4 13:41:47 2022
+# Make data base, printed on Tue Jul  5 08:25:50 2022
 
 # Variables
 
@@ -25,7 +25,7 @@ SNAP_INSTANCE_KEY =
 # environment
 GJS_DEBUG_OUTPUT = stderr
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-5eabe562-3b24-42e0-a331-9108c7cad563.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-38ce07cc-5115-40d3-aaaf-70f093d5522b.sock
 # environment
 LC_NAME = pt_BR.UTF-8
 # environment
@@ -107,7 +107,7 @@ SNAP_REEXEC =
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 4193
+VSCODE_PID = 7754
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -115,7 +115,7 @@ XDG_SESSION_TYPE = x11
 # environment
 BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
 # environment
-SESSION_MANAGER = local/lucas-C62-LIV:@/tmp/.ICE-unix/2439,unix/lucas-C62-LIV:/tmp/.ICE-unix/2439
+SESSION_MANAGER = local/lucas-C62-LIV:@/tmp/.ICE-unix/2402,unix/lucas-C62-LIV:/tmp/.ICE-unix/2402
 # automatic
 *F = $(notdir $*)
 # environment
@@ -163,7 +163,7 @@ LC_TIME = pt_BR.UTF-8
 # environment
 SNAP = /snap/code/99
 # environment
-INVOCATION_ID = 8ebf6a18ee5e4428a0bca3f03204532d
+INVOCATION_ID = ff449c929f904b2d932e41f6a0d8c13c
 # environment
 SNAP_REVISION = 99
 # environment
@@ -199,7 +199,7 @@ SNAP_ARCH = amd64
 # makefile
 .DEFAULT_GOAL := 
 # environment
-SYSTEMD_EXEC_PID = 2458
+SYSTEMD_EXEC_PID = 2424
 # environment
 DISPLAY = :0
 # environment
@@ -215,11 +215,11 @@ SNAP_DATA = /var/snap/code/99
 # environment
 SNAP_CONTEXT = 7rGYQs5xGx5bPEU2wlsSzJnSRAxoep-axT1IaklWJCV2W_xVvBVj
 # environment
-MANAGERPID = 1301
+MANAGERPID = 1309
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 4038
+GIO_LAUNCHED_DESKTOP_FILE_PID = 7633
 # environment
 _ = /snap/code/99/usr/share/code/code
 # environment
@@ -233,7 +233,7 @@ GDK_PIXBUF_MODULE_FILE = /home/lucas/snap/code/common/.cache/gdk-pixbuf-loaders.
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
-JOURNAL_STREAM = 8:22515
+JOURNAL_STREAM = 8:38135
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -310,7 +310,6 @@ Makefile:
 
 # Not a target:
 all:
- 
 #  Command line target.
 #  Implicit rule search has been done.
 #  File does not exist.
@@ -331,6 +330,7 @@ GNUmakefile:
 #  Failed to be updated.
 
 # files hash-table stats:
+ 
 # Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
 # VPATH Search Paths
 
@@ -344,6 +344,6 @@ GNUmakefile:
 # strcache performance: lookups = 16 / hit rate = 18%
 # hash-table stats:
 # Load=13/8192=0%, Rehash=0, Collisions=0/16=0%
-# Finished Make data base on Mon Jul  4 13:41:47 2022
+# Finished Make data base on Tue Jul  5 08:25:50 2022
 
  
