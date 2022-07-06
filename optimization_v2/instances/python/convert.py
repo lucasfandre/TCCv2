@@ -70,3 +70,10 @@ G = nx.from_pandas_adjacency(df)
 df = nx.to_pandas_edgelist(G)
 
 df.to_excel('edgelist.xlsx')
+
+nodes = pd.read_excel('edgelist.xlsx')
+nodes[['source','target','weight']].to_csv('nodes.txt', sep=' ', index=False)
+
+position = pd.read_excel('position.xlsx')
+position.fillna(0, inplace=True)
+position.drop(columns='Unnamed: 0').to_csv('position.txt', sep=' ', index=False)
