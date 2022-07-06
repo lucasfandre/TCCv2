@@ -51,7 +51,7 @@ using namespace lemon;
 using namespace std;
 
 int cutcount = 0;
-// adaptar do e-mail enviado pelo professor
+
 // Steiner_Instance put all relevant information in one class.
 class Steiner_Instance {
 public:
@@ -76,7 +76,8 @@ Steiner_Instance::Steiner_Instance(Digraph &graph,DNodeStringMap &vvname,
   nnodes = countNodes(g);
   nt = V.size();
 }
-
+// colocar uma coluna a mais
+// colocar o t, as arestas novas de s à todos os outros e de todos para t
 // This cutting plane routine inserts finds violated cuts between the root and the other terminals.
 // Any cut separating the root from the other terminals must have capacity at least 1
 // This is a user cut. That is, it is called when the variables x are still fractionary
@@ -116,12 +117,11 @@ protected:
       cout << e.getMessage() << endl;
     } catch (...) { cout << "Error during callback**" << endl; } }
 };
-
+// lemon percorre as arestas que 
 bool ReadSteinerDigraph(string filename,Digraph &dg,DNodeStringMap& vname,
 	DNodePosMap& posx,DNodePosMap& posy,ArcValueMap& weight,vector <DNode> &V){
   // Although we use a digraph, the input file is given as a graph.
   // So, we read a graph and then convert to a digraph.
-  // talvez possa tb implementar a adição de arestas da raiz para todos os outros?
   string type = GetGraphFileType(filename);
   if (type!="graph"){cout<<"Error: Unknown type of graph: "<<type<<endl;exit(1);}
 
@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
   ArcValueMap lpvar(g);    // used to obtain the contents of the LP variables
   ArcValueMap weight(g);   // edge weights
   Digraph::ArcMap<GRBVar> x(g); // binary variables for each arc
+  Digraph::NodeMap<GRBVar> y(g); // binary variables for each node
   vector <DNode> V;
   int seed=0;
   srand48(1);
@@ -174,7 +175,7 @@ int main(int argc, char *argv[])
   //set_pdfreader("xpdf");    // pdf reader for Linux
   //set_pdfreader("evince");  // pdf reader for Linux
 
-  
+    
   // double cutoff;   // used to prune non promissing branches (of the B&B tree)
   if (argc!=2) {cout<< endl << "Usage: "<< argv[0]<<"  <digraph_steiner_filename>"<< endl << endl;
     cout << "Example:" << endl <<
@@ -187,21 +188,21 @@ int main(int argc, char *argv[])
   //int time_limit = 3600; // Solver stops after time_limit seconds
   GRBEnv env = GRBEnv();
   GRBModel model = GRBModel(env);
-  model.getEnv().set(GRB_IntParam_LazyConstraints, 1); //lazy constraints faz sentido?
-  model.getEnv().set(GRB_IntParam_Seed, seed);
+  model.getEnv().set(GRB_IntParam_LazyConstraints, 0); // Tem lazy constraint?
+  model.getEnv().set(GRB_IntParam_Seed, seed); // no random seed, ou seja, no different solution paths
   model.set(GRB_StringAttr_ModelName, "Steiner Tree in Directed Graphs"); // prob. name
-  model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE); // is a minimization problem
-  // mudar para GRB_MAXIMIZE?
-
+  model.set(GRB_IntAttr_ModelSense, GRB_MAXIMIZE); // is a minimization problem
+  // fazer maximize (a unica diferença seria a função tentar maximizar chegando nos terminais)
   ReadSteinerDigraph(filename,g,vname,px,py,weight,V);
   Steiner_Instance T(g,vname,px,py,weight,V);
   
   // Generate the binary variables and the objective function
+  // tenho que colocar mais variaveis??
   // Add one binary variable for each edge and set its cost in the objective function
   for (ArcIt e(g); e != INVALID; ++e) {
     char name[100];
-    sprintf(name,"X_%s_%s",vname[g.source(e)].c_str(),vname[g.target(e)].c_str());
-    x[e] = model.addVar(0.0, 1.0, weight[e],GRB_BINARY,name); }
+    sprintf(name,"X_%s_%s",vname[g.source(e)].c_str(),vname[g.target(e)].c_str()); // printa o nome
+    x[e] = model.addVar(0.0, 1.0, weight[e],GRB_BINARY,name); } // define cada aresta como tendo o valor 0 ou 1 e o seu peso
   model.update(); // run update to use model inserted variables
   try {
     //if (time_limit >= 0) model.getEnv().set(GRB_DoubleParam_TimeLimit,time_limit);
@@ -223,17 +224,6 @@ int main(int argc, char *argv[])
     G.SetColor(T.V[0],"Red"); // except the root, that is painted  Red
     G.SetColorByValue(1.0,lpvar,"Blue"); // All arcs with x[a]=1 are painted with Blue
     G.SetColorByValue(0.0,lpvar,"Invis"); // other arcs are invisible
-    // somatório das arestar xE <= K --> numero máximo dado
-    //Função objetivo: max somatório de Pj*xj tal que Pj é o premio dado por pegar o vértice
-    //root tem o nome 0
-    // somatório do que entra em um vertice E = 1
-    // somatório do flow de saida de root = n (pois se coloca uma aresta artificial indo da raiz até todos os outros vértices) em que n é o número de vértices -1
-    //somatório do flow de saida de E = Somatório de flow de entrada - 1 (o vértice consome um ponto de flow)
-    //isso faz com que fE <= nxE (se passar algum fluxo em E, então xE é parte da solução e portanto é 1)
-    //Somatório de entrada em Xe = 1 (pois tem que ter um vértice entrando nem que seja o vermelho)
-    //n colocar arestas vermelhas entrando no terminal, pq?
-    //xij (de i para j) <= 1 - Xri esse eu n entendi mesmo
-
     G.SetLabel("Steiner Tree cost in graph with "+IntToString(T.nnodes)+
 	       " nodes and "+IntToString(T.nt)+" terminals: "+
 	       DoubleToString(GetModelValue(model)));
