@@ -199,6 +199,7 @@ int main(int argc, char *argv[])
   // Generate the binary variables and the objective function
   // tenho que colocar mais variaveis??
   // Add one binary variable for each edge and set its cost in the objective function
+  GRB_DoubleAttr_LB 
   for (ArcIt e(g); e != INVALID; ++e) {
     char name[100];
     sprintf(name,"X_%s_%s",vname[g.source(e)].c_str(),vname[g.target(e)].c_str()); // printa o nome
@@ -232,3 +233,4 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+// bipartatite matching

@@ -1,5 +1,5 @@
 // Project and Analysis of Algorithms
-// Flávio Keidi Miyazawa
+// Flï¿½vio Keidi Miyazawa
 // Problems with connectivity: Minimum Cost Steiner Tree
 #include <lemon/list_graph.h>
 #include "mygraphlib.h"
