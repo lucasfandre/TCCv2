@@ -95,6 +95,7 @@ bool ReadSteinerDigraph(string filename,Digraph &dg,DNodeStringMap& vname,
   NodeValueMap prize(g);
   NodePosMap px(g);
   NodePosMap py(g);
+  
 
   bool ok = GT.GetColumn("nodename",vn);
   ok = ok && GT.GetColumn("weight",w);
@@ -103,6 +104,27 @@ bool ReadSteinerDigraph(string filename,Digraph &dg,DNodeStringMap& vname,
   ok = ok && GetNodeCoordinates(GT,"posx",px,"posy",py);
 
   // Construction of the digraph
+  // preciso colocar as arestas vermelhas no grafo
+  // gerar is_red
+  for (NodeIt n(g);n!=INVALID;++n){
+    if (vn[n]=="0"){
+      R = n;
+      break;
+    }
+  }
+  for( NodeIt n(g); n!=INVALID; ++n ){
+    if (is_terminal[n]==0){
+      g.addEdge(R,n); // adicionando aresta da raiz para todos os outros
+
+    }
+  }
+  NodeIntMap is_terminal(g);
+  NodeStringMap vn(g);
+  EdgeValueMap w(g);
+  NodeValueMap prize(g);
+  NodePosMap px(g);
+  NodePosMap py(g);
+  
   NodeDNodeMap nodemap(g); EdgeArcMap edgemap1(g); EdgeArcMap edgemap2(g);
   Graph2Digraph(g,dg,nodemap,edgemap1,edgemap2);
   for (NodeIt v(g);v!=INVALID;++v) {
@@ -113,6 +135,7 @@ bool ReadSteinerDigraph(string filename,Digraph &dg,DNodeStringMap& vname,
   for (EdgeIt e(g);e!=INVALID;++e) {
     weight[edgemap1[e]] = w[e];
     weight[edgemap2[e]] = w[e];}
+
   return(ok);
 }
 
@@ -130,7 +153,7 @@ int main(int argc, char *argv[])
   ArcValueMap weight(g);   // edge weights
   NodeValueMap prize(g);   // prize of each node
   Digraph::ArcMap<GRBVar> x(g); // binary variables for each arc
-  Digraph::NodeMap<GRBVar> f(g); //flow for each node
+  Digraph::ArcMap<GRBVar> f(g); //flow for each node
   vector <DNode> V;
   int seed=0;
   srand48(1);
@@ -149,6 +172,7 @@ int main(int argc, char *argv[])
     exit(0);}
 
   filename = argv[1];
+  K = argv[2];
 
   //int time_limit = 3600; // Solver stops after time_limit seconds
   GRBEnv env = GRBEnv();
@@ -157,17 +181,52 @@ int main(int argc, char *argv[])
   model.getEnv().set(GRB_IntParam_Seed, seed);  // define random seed como 0, não gera resultados diferentes para cada iteração
   model.set(GRB_StringAttr_ModelName, "Steiner Tree prize collecting"); // prob. name
   model.set(GRB_IntAttr_ModelSense, GRB_MAXIMIZE); // is a minimization problem
-  // mudar para GRB_MAXIMIZE?
-
   ReadSteinerDigraph(filename,g,vname,px,py,weight,prize,V);
   Steiner_Instance T(g,vname,px,py,weight,prize,V);
+  for (NodeIt v(g);v!=INVALID;++v) { // define qual é a raiz
+    GRBLinExpr expr;
+    if(vname[v]=="0"){
+      R = v;
+      break;
+    }
+    else if (is_terminal[v]){
+      for(InArcIt a(g,v);a!=INVALID;++a){
+        expr += x[a];
+      }
+      model.addConstr(expr==1);
+    }
+    else{
+      for(InArcIt a(g,v);a!=INVALID;++a){
+        expr += x[a];
+      }
+      model.addConstr(expr<=1);
+    }
+  }
+  for (NodeIt v(g);v!=INVALID;++v) { // define a conservação de fluxo
+    GRBLinExpr exprin, exprout;
+    for(InArcIt a(g,v);a!=INVALID;++a) exprin += f[a];
+    for(OutArcIt a(g,v);a!=INVALID;++a) exprout += f[a];
+    model.addConstr(exprin-exprout==1);
+  }
   
+  GRBLinExpr expr2;
+  for (ArcIt a(g);a!=INVALID;++a) expr2 += x[a];
+  model.addConstr(expr2==K);
+
+
   // Generate the binary variables and the objective function
   // Add one binary variable for each edge and set its cost in the objective function
-  for (ArcIt e(g); e != INVALID; ++e) {
+  for (NodeIt e(g); e != INVALID; ++e) {
     char name[100];
     sprintf(name,"X_%s_%s",vname[g.source(e)].c_str(),vname[g.target(e)].c_str());
-    x[e] = model.addVar(0.0, 1.0, weight[e],GRB_BINARY,name); }
+    x[e] = model.addVar(0.0, 1.0, prize[e],GRB_BINARY,name);
+     }
+
+  for(NodeIt v(g);v!=INVALID;++v){
+    char name[100];
+    sprintf(name,"F_%s",vname[v].c_str());
+    f[v] = model.addVar(0.0, 1.0, prize[e],GRB_BINARY,name);
+  }
   model.update(); // run update to use model inserted variables
   try {
     //if (time_limit >= 0) model.getEnv().set(GRB_DoubleParam_TimeLimit,time_limit);
