@@ -60,65 +60,27 @@ public:
 		   DNodePosMap &posx,
 		   DNodePosMap &posy,
 		   ArcValueMap &eweight,
+       NodeValueMap &nprize,  // prize of each node
 		   vector <DNode> &V); // first nt nodes are terminals
   Digraph &g;
   DNodeStringMap &vname;
   DNodePosMap &px;
   DNodePosMap &py;
   ArcValueMap &weight;
+  NodeValueMap &prize;
   int nt,nnodes;
   vector <DNode> &V; // Node V[0] is the root. Nodes V[1], ... , V[nt-1] are the destination
 };
 
 Steiner_Instance::Steiner_Instance(Digraph &graph,DNodeStringMap &vvname,
-	DNodePosMap &posx,DNodePosMap &posy,ArcValueMap &eweight,vector <DNode> &V):
-        g(graph), vname(vvname), px(posx), py(posy), weight(eweight), V(V) {
+	DNodePosMap &posx,DNodePosMap &posy,ArcValueMap &eweight,NodeValueMap &nprize,vector <DNode> &V):
+        g(graph), vname(vvname), px(posx), py(posy), weight(eweight),prize(nprize), V(V) {
   nnodes = countNodes(g);
   nt = V.size();
 }
 
-// This cutting plane routine inserts finds violated cuts between the root and the other terminals.
-// Any cut separating the root from the other terminals must have capacity at least 1
-// This is a user cut. That is, it is called when the variables x are still fractionary
-class ConnectivityCuts: public GRBCallback
-{
-  Steiner_Instance &T;
-  Digraph::ArcMap<GRBVar>& x;
-  double (GRBCallback::*solution_value)(GRBVar);
-public:
-  ConnectivityCuts(Steiner_Instance &T, Digraph::ArcMap<GRBVar>& x) : T(T),x(x)
-  {    }
-protected:
-  void callback()
-  {
-    if (where==GRB_CB_MIPSOL){ solution_value = &ConnectivityCuts::getSolution;}
-    else if (where==GRB_CB_MIPNODE && getIntInfo(GRB_CB_MIPNODE_STATUS)==GRB_OPTIMAL) {
-      solution_value = &ConnectivityCuts::getNodeRel;
-    } else return;
-    try {
-      Digraph &g = T.g;
-      ArcValueMap capacity(g);
-      DCutMap cut(g);
-      double vcut;
-      for (ArcIt a(g);a!=INVALID;++a) capacity[a]=(this->*solution_value)(x[a]);
-      
-      for (int i=1;i< T.nt;i++) {
-	// find a mincut between root V[0] and other terminal
-	vcut = DiMinCut(g,capacity, T.V[0] , T.V[i], cut);
-	if (vcut >= 1.0-MY_EPS) continue; // else: found violated cut
-	GRBLinExpr expr;
-	for (ArcIt a(g); a!=INVALID; ++a) 
-	  if ((cut[g.source(a)]==cut[T.V[0]]) && (cut[g.target(a)]!=cut[T.V[0]]))
-	    expr += x[a];
-	addLazy( expr >= 1.0 ); }
-    } catch (GRBException e) {
-      cout << "Error number: " << e.getErrorCode() << endl;
-      cout << e.getMessage() << endl;
-    } catch (...) { cout << "Error during callback**" << endl; } }
-};
-
 bool ReadSteinerDigraph(string filename,Digraph &dg,DNodeStringMap& vname,
-	DNodePosMap& posx,DNodePosMap& posy,ArcValueMap& weight,vector <DNode> &V){
+	DNodePosMap& posx,DNodePosMap& posy,ArcValueMap& weight,NodeValueMap& prize,vector <DNode> &V){
   // Although we use a digraph, the input file is given as a graph.
   // So, we read a graph and then convert to a digraph.
   // talvez possa tb implementar a adição de arestas da raiz para todos os outros?
@@ -130,12 +92,14 @@ bool ReadSteinerDigraph(string filename,Digraph &dg,DNodeStringMap& vname,
   NodeIntMap is_terminal(g);
   NodeStringMap vn(g);
   EdgeValueMap w(g);
+  NodeValueMap prize(g);
   NodePosMap px(g);
   NodePosMap py(g);
 
   bool ok = GT.GetColumn("nodename",vn);
   ok = ok && GT.GetColumn("weight",w);
   ok = ok && GT.GetColumn("terminal",is_terminal);
+  ok = ok && GT.GetColumn("prize",prize);
   ok = ok && GetNodeCoordinates(GT,"posx",px,"posy",py);
 
   // Construction of the digraph
@@ -164,7 +128,9 @@ int main(int argc, char *argv[])
   ArcColorMap acolor(g); // color of edges
   ArcValueMap lpvar(g);    // used to obtain the contents of the LP variables
   ArcValueMap weight(g);   // edge weights
+  NodeValueMap prize(g);   // prize of each node
   Digraph::ArcMap<GRBVar> x(g); // binary variables for each arc
+  Digraph::NodeMap<GRBVar> f(g); //flow for each node
   vector <DNode> V;
   int seed=0;
   srand48(1);
@@ -187,14 +153,14 @@ int main(int argc, char *argv[])
   //int time_limit = 3600; // Solver stops after time_limit seconds
   GRBEnv env = GRBEnv();
   GRBModel model = GRBModel(env);
-  model.getEnv().set(GRB_IntParam_LazyConstraints, 1); //lazy constraints faz sentido?
-  model.getEnv().set(GRB_IntParam_Seed, seed);
-  model.set(GRB_StringAttr_ModelName, "Steiner Tree in Directed Graphs"); // prob. name
-  model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE); // is a minimization problem
+  model.getEnv().set(GRB_IntParam_LazyConstraints, 0); //sem lazy constraints
+  model.getEnv().set(GRB_IntParam_Seed, seed);  // define random seed como 0, não gera resultados diferentes para cada iteração
+  model.set(GRB_StringAttr_ModelName, "Steiner Tree prize collecting"); // prob. name
+  model.set(GRB_IntAttr_ModelSense, GRB_MAXIMIZE); // is a minimization problem
   // mudar para GRB_MAXIMIZE?
 
-  ReadSteinerDigraph(filename,g,vname,px,py,weight,V);
-  Steiner_Instance T(g,vname,px,py,weight,V);
+  ReadSteinerDigraph(filename,g,vname,px,py,weight,prize,V);
+  Steiner_Instance T(g,vname,px,py,weight,prize,V);
   
   // Generate the binary variables and the objective function
   // Add one binary variable for each edge and set its cost in the objective function
@@ -207,9 +173,6 @@ int main(int argc, char *argv[])
     //if (time_limit >= 0) model.getEnv().set(GRB_DoubleParam_TimeLimit,time_limit);
     //model.getEnv().set(GRB_DoubleParam_ImproveStartTime,10); //try better sol. aft. 10s
     // if (cutoff > 0) model.getEnv().set(GRB_DoubleParam_Cutoff, cutoff );
-
-    ConnectivityCuts cb = ConnectivityCuts(T , x);
-    model.setCallback(&cb);
     //model.write("model.lp"); system("cat model.lp");
     model.optimize();
     if (model.get(GRB_IntAttr_SolCount) == 0)  // if could not obtain a solution
