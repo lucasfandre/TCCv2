@@ -1,4 +1,5 @@
 import json
+from random import random
 import pandas as pd
 import math
 import networkx as nx
@@ -77,3 +78,6 @@ nodes[['source','target','weight']].to_csv('nodes.txt', sep=' ', index=False)
 position = pd.read_excel('position.xlsx')
 position.fillna(0, inplace=True)
 position.drop(columns='Unnamed: 0').to_csv('position.txt', sep=' ', index=False)
+
+
+random.seed(1)
